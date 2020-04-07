@@ -13,6 +13,7 @@
             <v-icon small>mdi-chevron-right</v-icon>
           </v-btn>
           <v-toolbar-title>{{ title }}</v-toolbar-title>
+          <v-spacer></v-spacer>
 
           <v-menu bottom right>
             <template v-slot:activator="{ on }">
@@ -39,8 +40,7 @@
           </v-menu>
         </v-toolbar>
       </v-sheet>
-
-      <v-dialog v-model="dialog" max-width="500">
+<v-dialog v-model="dialog" max-width="500">
         <v-card>
           <v-container>
             <v-form @submit.prevent="addEvent">
@@ -59,7 +59,6 @@
           </v-container>
         </v-card>
       </v-dialog>
-
       <v-sheet height="600">
         <v-calendar
           ref="calendar"
@@ -75,7 +74,6 @@
           @click:date="viewDay"
           @change="updateRange"
         ></v-calendar>
-
         <v-menu
           v-model="selectedOpen"
           :close-on-content-click="false"
@@ -90,7 +88,7 @@
               <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar>
-
+            
             <v-card-text>
               <form v-if="currentlyEditing !== selectedEvent.id">{{ selectedEvent.details }}</form>
               <form v-else>
@@ -103,7 +101,6 @@
                 ></textarea-autosize>
               </form>
             </v-card-text>
-
             <v-card-actions>
               <v-btn text color="secondary" @click="selectedOpen = false">Close</v-btn>
 
@@ -112,7 +109,6 @@
                 v-if="currentlyEditing !== selectedEvent.id"
                 @click.prevent="editEvent(selectedEvent)"
               >Edit</v-btn>
-
               <v-btn text v-else @click.prevent="updateEvent(selectedEvent)">Save</v-btn>
             </v-card-actions>
           </v-card>
@@ -121,6 +117,19 @@
     </v-col>
   </v-row>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <script>
 import { db } from "@/main";
@@ -135,6 +144,7 @@ export default {
       day: "Day",
       "4day": "4 Days"
     },
+
     name: null,
     details: null,
     start: null,
@@ -148,11 +158,11 @@ export default {
     dialog: false
   }),
   computed: {
-      title () {
-        const { start, end } = this
-        if (!start || !end) {
-          return ''
-        }
+    title() {
+      const { start, end } = this;
+      if (!start || !end) {
+        return "";
+      }
 
       const startMonth = this.monthFormatter(start);
       const endMonth = this.monthFormatter(end);
@@ -185,6 +195,7 @@ export default {
   },
   mounted() {
     this.getEvents();
+    //this.$refs.calendar.checkChange()
   },
   methods: {
     async getEvents() {
@@ -206,6 +217,7 @@ export default {
           end: this.end,
           color: this.color
         });
+
         this.getEvents;
         this.name = "";
         this.details = "";
@@ -297,7 +309,6 @@ export default {
           color: this.colors[this.rnd(0, this.colors.length - 1)]
         });
       }
-
       this.start = start;
       this.end = end;
       this.events = events;
@@ -306,8 +317,31 @@ export default {
       return d > 3 && d < 21
         ? "th"
         : ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"][d % 10];
-    },
-    
+    }
+    /*rnd (a, b) {
+        return Math.floor((b - a + 1) * Math.random()) + a
+      },
+      formatDate (a, withTime) {
+        return withTime
+          ? `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()} ${a.getHours()}:${a.getMinutes()}`
+          : `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()}` */
   }
 };
 </script>
+
+
+
+
+
+
+  
+
+
+
+   
+
+     
+    
+      
+
+       
