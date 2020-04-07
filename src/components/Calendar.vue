@@ -4,7 +4,9 @@
 
       <v-sheet height="64">
         <v-toolbar flat color="white">
-          <v-btn color="primary" class="mr-4" dark @click="dialog = true">New Event</v-btn>
+
+          <v-btn color="primary" class="mr-4" @click="dialog = true" dark>New Event</v-btn>
+
           <v-btn outlined class="mr-4" @click="setToday">Today</v-btn>
           <v-btn fab text small @click="prev">
             <v-icon small>mdi-chevron-left</v-icon>
@@ -16,7 +18,7 @@
           <v-spacer></v-spacer>
 
           <v-menu bottom right>
-            <template v-slot:activator="{ on }">
+       <template v-slot:activator="{ on }">
               <v-btn outlined v-on="on">
                 <span>{{ typeToLabel[type] }}</span>
                 <v-icon right>mdi-menu-down</v-icon>
@@ -40,6 +42,8 @@
           </v-menu>
         </v-toolbar>
       </v-sheet>
+
+<!--add event dialog-->
 <v-dialog v-model="dialog" max-width="500">
         <v-card>
           <v-container>
@@ -49,6 +53,7 @@
               <v-text-field v-model="start" type="date" label="start (required)"></v-text-field>
               <v-text-field v-model="end" type="date" label="end (required)"></v-text-field>
               <v-text-field v-model="color" type="color" label="color (click to open color menu)"></v-text-field>
+              
               <v-btn
                 type="submit"
                 color="primary"
@@ -59,6 +64,8 @@
           </v-container>
         </v-card>
       </v-dialog>
+
+
       <v-sheet height="600">
         <v-calendar
           ref="calendar"
@@ -74,6 +81,7 @@
           @click:date="viewDay"
           @change="updateRange"
         ></v-calendar>
+
         <v-menu
           v-model="selectedOpen"
           :close-on-content-click="false"
@@ -88,7 +96,6 @@
               <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar>
-            
             <v-card-text>
               <form v-if="currentlyEditing !== selectedEvent.id">{{ selectedEvent.details }}</form>
               <form v-else>
@@ -102,6 +109,7 @@
               </form>
             </v-card-text>
             <v-card-actions>
+
               <v-btn text color="secondary" @click="selectedOpen = false">Close</v-btn>
 
               <v-btn
@@ -109,6 +117,7 @@
                 v-if="currentlyEditing !== selectedEvent.id"
                 @click.prevent="editEvent(selectedEvent)"
               >Edit</v-btn>
+
               <v-btn text v-else @click.prevent="updateEvent(selectedEvent)">Save</v-btn>
             </v-card-actions>
           </v-card>
@@ -117,17 +126,6 @@
     </v-col>
   </v-row>
 </template>
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -159,21 +157,21 @@ export default {
   }),
   computed: {
     title() {
-      const { start, end } = this;
+      const { start, end } = this
       if (!start || !end) {
-        return "";
+        return ''
       }
 
-      const startMonth = this.monthFormatter(start);
-      const endMonth = this.monthFormatter(end);
-      const suffixMonth = startMonth === endMonth ? "" : endMonth;
+      const startMonth = this.monthFormatter(start)
+      const endMonth = this.monthFormatter(end)
+      const suffixMonth = startMonth === endMonth ? '' : endMonth
 
-      const startYear = start.year;
-      const endYear = end.year;
-      const suffixYear = startYear === endYear ? "" : endYear;
+      const startYear = start.year
+      const endYear = end.year
+      const suffixYear = startYear === endYear ? '' : endYear
 
-      const startDay = start.day + this.nth(start.day);
-      const endDay = end.day + this.nth(end.day);
+      const startDay = start.day + this.nth(start.day)
+      const endDay = end.day + this.nth(end.day)
 
       switch (this.type) {
         case "month":
@@ -184,22 +182,21 @@ export default {
         case "day":
           return `${startMonth} ${startDay} ${startYear}`;
       }
-      return "";
+      return ""
     },
     monthFormatter() {
       return this.$refs.calendar.getFormatter({
         timeZone: "UTC",
-        month: "long"
-      });
-    }
+        month: "long",
+      })
+    },
   },
   mounted() {
     this.getEvents();
-    //this.$refs.calendar.checkChange()
   },
   methods: {
     async getEvents() {
-      let snapshot = await db.collection("calEvent").get();
+      let snapshot = await db.collection('calEvent').get();
       let events = [];
       snapshot.forEach(doc => {
         let appData = doc.data();
@@ -210,7 +207,7 @@ export default {
     },
     async addEvent() {
       if (this.name && this.start && this.end) {
-        await db.collection("calEvent").add({
+        await db.collection('calEvent').add({
           name: this.name,
           details: this.details,
           start: this.start,
@@ -218,19 +215,19 @@ export default {
           color: this.color
         });
 
-        this.getEvents;
+        this.getEvents();
         this.name = "";
         this.details = "";
         this.start = "";
         this.end = "";
         this.color = "#1976D2";
       } else {
-        alert("Name, start and end date are required");
+        alert('Name, start and end date are required');
       }
     },
     async updateEvent(ev) {
       await db
-        .collection("calEvent")
+        .collection('calEvent')
         .doc(this.currentlyEditing)
         .update({
           details: ev.details
@@ -238,13 +235,9 @@ export default {
       this.selectedOpen = false;
       this.currentlyEditing = null;
     },
-    /*setDialogDate({ date }) {
-      this.dialogDate = true;
-      this.focus = date;
-    },*/
     async deleteEvent(ev) {
       await db
-        .collection("calEvent")
+        .collection('calEvent')
         .doc(ev)
         .delete();
 
@@ -255,8 +248,8 @@ export default {
       this.focus = date;
       this.type = "day";
     },
-    getEventColor(ev) {
-      return ev.color;
+    getEventColor(event) {
+      return event.color;
     },
     setToday() {
       this.focus = this.today;
@@ -287,7 +280,7 @@ export default {
       nativeEvent.stopPropagation();
     },
     updateRange({ start, end }) {
-      this.start = start;
+     
       const events = [];
 
       const min = new Date(`${start.date}T00:00:00`);
@@ -307,11 +300,11 @@ export default {
           start: this.formatDate(first, !allDay),
           end: this.formatDate(second, !allDay),
           color: this.colors[this.rnd(0, this.colors.length - 1)]
-        });
+        })
       }
-      this.start = start;
-      this.end = end;
-      this.events = events;
+      this.start = start
+      this.end = end
+      this.events = events
     },
     nth(d) {
       return d > 3 && d < 21
